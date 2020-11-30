@@ -26,7 +26,21 @@ const User = {
     users.push(newUser);
     return newUser;
   },
-  updateUser(id) {},
+  updateUser(id, changes) {
+    const user = users.find((user) => user.id === id);
+    if (!user) {
+      return null;
+    } else {
+      users = users.map((u) => {
+        if (u.id === id) {
+          return { id, ...changes };
+        } else {
+          return u;
+        }
+      });
+      return { id, ...changes };
+    }
+  },
   deleteUser(id) {},
 };
 
@@ -69,6 +83,27 @@ server.post("/api/users", (req, res) => {
   } else {
     const newlyCreatedUser = User.createUser(userFromClient);
     res.status(201).json(newlyCreatedUser);
+  }
+});
+
+server.put("/api/users/:id", (req, res) => {
+  const changes = req.body;
+  const { id } = req.params;
+
+  const replacedUser = User.updateUser(id, changes);
+
+  if (!changes.name || !changes.bio) {
+    res
+      .status(400)
+      .json({ errorMessage: "Please provide name and bio for the user." });
+  } else {
+    if (replacedUser) {
+      res.status(200).json(replacedUser);
+    } else {
+      res
+        .status(404)
+        .json({ message: "The user with the specified ID does not exist." });
+    }
   }
 });
 
