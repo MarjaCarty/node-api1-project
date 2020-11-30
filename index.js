@@ -18,10 +18,12 @@ const User = {
   getAllUsers() {
     return users;
   },
-  getUserById() {},
-  createUser() {},
-  updateUser() {},
-  deleteUser() {},
+  getUserById(id) {
+    return users.find((user) => user.id === id);
+  },
+  createUser(user) {},
+  updateUser(id) {},
+  deleteUser(id) {},
 };
 
 server.get("/api/users", (req, res) => {
@@ -33,6 +35,23 @@ server.get("/api/users", (req, res) => {
     res
       .status(500)
       .json({ errorMessage: "The users information could not be retrieved." });
+  }
+});
+
+server.get("/api/users/:id", (req, res) => {
+  const { id } = req.params;
+  const user = User.getUserById(id);
+
+  if (user) {
+    res.status(200).json(user);
+  } else if (!user) {
+    res
+      .status(404)
+      .json({ message: "The user with the specified ID does not exist." });
+  } else {
+    res
+      .status(500)
+      .json({ errorMessage: "The user information could not be retrieved." });
   }
 });
 
