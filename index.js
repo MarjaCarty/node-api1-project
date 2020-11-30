@@ -21,7 +21,11 @@ const User = {
   getUserById(id) {
     return users.find((user) => user.id === id);
   },
-  createUser(user) {},
+  createUser(user) {
+    const newUser = { id: shortid.generate(), ...user };
+    users.push(newUser);
+    return newUser;
+  },
   updateUser(id) {},
   deleteUser(id) {},
 };
@@ -52,6 +56,19 @@ server.get("/api/users/:id", (req, res) => {
     res
       .status(500)
       .json({ errorMessage: "The user information could not be retrieved." });
+  }
+});
+
+server.post("/api/users", (req, res) => {
+  const userFromClient = req.body;
+
+  if (!userFromClient.name || !userFromClient.bio) {
+    res
+      .status(400)
+      .json({ errorMessage: "Please provide name and bio for the user." });
+  } else {
+    const newlyCreatedUser = User.createUser(userFromClient);
+    res.status(201).json(newlyCreatedUser);
   }
 });
 
