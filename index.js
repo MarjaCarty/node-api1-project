@@ -41,7 +41,14 @@ const User = {
       return { id, ...changes };
     }
   },
-  deleteUser(id) {},
+  deleteUser(id) {
+    const user = users.find((user) => user.id === id);
+
+    if (user) {
+      users = users.filter((u) => u.id !== id);
+    }
+    return user;
+  },
 };
 
 server.get("/api/users", (req, res) => {
@@ -104,6 +111,19 @@ server.put("/api/users/:id", (req, res) => {
         .status(404)
         .json({ message: "The user with the specified ID does not exist." });
     }
+  }
+});
+
+server.delete("/api/users/:id", (req, res) => {
+  const { id } = req.params;
+  const deleted = User.deleteUser(id);
+
+  if (deleted) {
+    res.status(200).json(deleted);
+  } else {
+    res
+      .status(404)
+      .json({ message: "The user with the specified ID does not exist." });
   }
 });
 
