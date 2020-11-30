@@ -15,12 +15,26 @@ let users = [
 ];
 
 const User = {
-  getAllUsers() {},
+  getAllUsers() {
+    return users;
+  },
   getUserById() {},
   createUser() {},
   updateUser() {},
   deleteUser() {},
 };
+
+server.get("/api/users", (req, res) => {
+  const users = User.getAllUsers();
+
+  if (users) {
+    res.status(200).json(users);
+  } else {
+    res
+      .status(500)
+      .json({ errorMessage: "The users information could not be retrieved." });
+  }
+});
 
 server.use("*", (req, res) => {
   // req represents the request from the client
